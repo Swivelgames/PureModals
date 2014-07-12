@@ -21,11 +21,11 @@ var Modal = (function(){
 
 		// TemplateName is required
 		if (!TemplateName || typeof TemplateName != "string") {
-			if (!this.tplName || typeof this.tplName != "string") {
+			if (!this.modalName || typeof this.modalName != "string") {
 				throw new TypeError("First parameter must be string if extended class has not specified a template");
 			}
 		} else {
-			this.tplName = TemplateName;
+			this.modalName = TemplateName;
 		}
 
 		// Property Definitions
@@ -78,7 +78,7 @@ var Modal = (function(){
 		data: null,
 		content: null,
 		options: null,
-		tplName: null,
+		modalName: null,
 		displayed: false,
 		overlay: null,
 		guid: false,
@@ -349,7 +349,7 @@ var Modal = (function(){
 			).join(" ");
 
 			// Set modal attributes
-			modal.setAttribute('data-modal-name', this.tplName);
+			modal.setAttribute('data-modal-name', this.modalName);
 			modal.setAttribute('data-modal-guid', this.guid);
 
 			var css = this.getSetting('css');
@@ -698,7 +698,7 @@ var Modal = (function(){
 
 						if (attrVal) {
 							options.tplUrlOverride=attrVal;
-						} else if (!modalClass.prototype.tplName) {
+						} else if (!modalClass.prototype.modalName) {
 							console.error("Invalid Modal Name: "+modalTpl);
 							return;
 						}
@@ -1570,8 +1570,8 @@ var Modal = (function(){
 				return true;
 			}
 
-			if (this.getSetting('useCache') && this.global.cache[this.tplName]) {
-				this._tpl = this.__stringToDom(this.global.cache[this.tplName]);
+			if (this.getSetting('useCache') && this.global.cache[this.modalName]) {
+				this._tpl = this.__stringToDom(this.global.cache[this.modalName]);
 				this.__initModalDom();
 				return true;
 			}
@@ -1620,7 +1620,7 @@ var Modal = (function(){
 
 			if (ajax.readyState == 4) {
 				if(ajax.status == 200) {
-					this.global.cache[this.tplName] = ajax.responseText;
+					this.global.cache[this.modalName] = ajax.responseText;
 					this._tpl = this.__stringToDom(ajax.responseText);
 					this.__initModalDom();
 				} else {
@@ -1633,7 +1633,7 @@ var Modal = (function(){
 		__getTplUri: function() {
 			return this.getSetting('tplUrlOverride') || (
 				this.getSetting('tplDir') +
-				this.tplName +
+				this.modalName +
 				this.getSetting('tplExt')
 			);
 		},
