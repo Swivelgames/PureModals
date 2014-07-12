@@ -174,7 +174,7 @@ A `Modal Template File` refers to a web resource that returns HTML code formatte
 
 There are three main elements of a Modal Template File's resource location.
 
-The `tplDir` option is relative to the web address of the page the user is currently on. As a best practice, the value should be relative to the base URL (i.e. the value should start with "/"). This specifies the folder that contains all the modal template files. The tplExt option is the uniform filename extension for all modal template files. By default, this is ".html". Both of the options above are concatenated to the tplName property to retrieve the template file.
+The `tplDir` option is relative to the web address of the page the user is currently on. As a best practice, the value should be relative to the base URL (i.e. the value should start with "/"). This specifies the folder that contains all the modal template files. The tplExt option is the uniform filename extension for all modal template files. By default, this is ".html". Both of the options above are concatenated to the `modalName` property to retrieve the template file.
 
 **Example**:
 ```javascript
@@ -323,8 +323,8 @@ All HTML5 data-* attributes that exist on the DOM element Clicked will be passed
    "modal-class": "BN.Modals.SectionName.ModalName",  
    "modal": "my-modal",  
    "foo": "bar",  
-   "target": [Object DOMElement],  
-   "targetEvent": [Object Event]  
+   "target": [object DOMElement],  
+   "targetEvent": [object Event]  
 }
 ```
 
