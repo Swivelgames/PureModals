@@ -354,7 +354,7 @@ var Modal = (function(){
 			}
 
 			// Cancel display if beforeDisplay returns false
-			if(this.trigger('beforeDisplay', true)===false) return;
+			if(this.triggerHandler('beforeDisplay', true)===false) return;
 
 			// Initialize view and display
 			var ret = this.initView();
@@ -511,8 +511,8 @@ var Modal = (function(){
 				});
 			}
 
-			// Trigger callbacks
-			this.trigger('display visible');
+			// triggerHandler callbacks
+			this.triggerHandler('display visible');
 
 			return this;
 		},
@@ -562,7 +562,7 @@ var Modal = (function(){
 					var thisFlow = thisModal.flow(),
 						allModals = thisModal.openModals;
 
-					// Trigger close on current modal
+					// triggerHandler close on current modal
 					thisModal.Close('overlay');
 
 					switch (closeAction) {
@@ -601,8 +601,8 @@ var Modal = (function(){
 				this.global.overlayModal = this;
 				document.body.appendChild(overlay);
 
-				// Trigger event
-				this.trigger('showOverlay');
+				// triggerHandler event
+				this.triggerHandler('showOverlay');
 			} else {
 				// Queue show of overlay with hidding of other overlay
 				curModal.on('hideOverlay', function(){
@@ -886,7 +886,7 @@ var Modal = (function(){
 				this.__initOverlay();
 			}
 
-			this.trigger('show visible');
+			this.triggerHandler('show visible');
 
 			return this;
 		},
@@ -896,7 +896,7 @@ var Modal = (function(){
 
 			if(this.getSetting('modalIsScrollable')) {
 				this.overlay.style.display = "none";
-				this.trigger('hideOverlay');
+				this.triggerHandler('hideOverlay');
 			} else {
 				this.modal.style.display = "none";
 
@@ -904,11 +904,11 @@ var Modal = (function(){
 					this.overlay.parentNode.removeChild(this.overlay);
 					this.overlay = null;
 
-					this.trigger('hideOverlay');
+					this.triggerHandler('hideOverlay');
 				}
 			}
 
-			this.trigger('hide');
+			this.triggerHandler('hide');
 
 			return this;
 		},
@@ -1133,7 +1133,7 @@ var Modal = (function(){
 				source = source.trim().split(reg).join(' close.');
 			}
 
-			this.trigger('close close.'+source);
+			if(this.triggerHandler('close close.'+source, true, )===false) return false;
 
 			if(this.__isDOM(this.modal) && this.modal.parentNode) {
 				this.modal.parentNode.removeChild(this.modal);
@@ -1158,19 +1158,19 @@ var Modal = (function(){
 				this.global.overlayModal = null;
 			}
 
-			this.trigger('close.post');
+			this.triggerHandler('close.post');
 		},
 
 
 	/**
 	 * Events
 	 */
-		trigger: function(event, dieOnFalse) {
+		triggerHandler: function(event, dieOnFalse, extraData) {
 			var reg = /\s+/ig;
 			if (reg.test(event)) {
 				var events = event.split(reg);
 				for (var i=0;i<events.length;i++) {
-					var res = this.trigger(events[i]);
+					var res = this.triggerHandler(events[i], dieOnFalse, extraData);
 
 					if (dieOnFalse && res===false) {
 						return false;
@@ -1189,7 +1189,7 @@ var Modal = (function(){
 					if (firstIndex!=i) continue;
 
 					if (func instanceof Function) {
-						var res = func.apply(this,[event]);
+						var res = func.apply(this,[event, extraData]);
 
 						if (dieOnFalse && res===false) {
 							return false;
@@ -1242,7 +1242,7 @@ var Modal = (function(){
 				}
 			}
 
-			this.trigger('move');
+			this.triggerHandler('move');
 		},
 
 		__centerPos: function() {

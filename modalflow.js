@@ -54,7 +54,7 @@ var ModalFlow = (function(){
 				if (i<0) {
 					if (!!this.closeOnBack) {
 						var first = this[0];
-						first.triggerClose(closeType);
+						first.Close(closeType);
 						delete this[0];
 						return first;
 					}
@@ -69,7 +69,7 @@ var ModalFlow = (function(){
 					// Iterate over modals in front
 					for (var x=(this.length-1);i<x;x--) {
 						// Close modal
-						this[x].triggerClose(closeType);
+						this[x].Close(closeType);
 						delete this[x];
 					}
 				}
