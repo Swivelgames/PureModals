@@ -267,7 +267,7 @@ var ModalFlow = (function(){
 
 				// Attach callback to event stacks
 				this.closeEvents.splice(i,0,func);
-				modal.closeEvents.all.push(func);
+				modal.on('close', func);
 
 				// Return modal added to stack
 				return modal;
@@ -289,12 +289,12 @@ var ModalFlow = (function(){
 			value: function(i) {
 				var x = -1;
 				while((
-					x = this[i].closeEvents.all.indexOf(
+					x = this[i].events.close.indexOf(
 						this.closeEvents[i]
 					)
 				) > -1) {
 					// Remove close callback from modal listener stack
-					this[i].closeEvents.all.splice(x,1);
+					this[i].events.close.splice(x,1);
 				};
 
 				// Remove close callback from local listener stack

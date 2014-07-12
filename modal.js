@@ -44,12 +44,6 @@ var Modal = (function(){
 
 		// Event listener stacks
 		this.events = {};
-		this.closeEvents = {
-			'back': [],
-			'button': [],
-			'method': [],
-			'all': []
-		};
 
 		// Set initial content (from options objects)
 		this.__initContent.apply(this,arguments);
@@ -83,7 +77,6 @@ var Modal = (function(){
 		overlay: null,
 		guid: false,
 		events: null,
-		closeEvents: null,
 		target: null,
 		parent: null,
 
@@ -456,7 +449,7 @@ var Modal = (function(){
 				modal.style.display = "inline-block";
 
 				this.__disableBodyScrolling();
-				this.closeEvents.all.push(this.__restoreScrollAndBodyElement);
+				this.on('close', this.__restoreScrollAndBodyElement);
 			} else {
 				// Append modal to the body
 				document.body.appendChild(modal);
@@ -479,14 +472,14 @@ var Modal = (function(){
 					Parent.hide();
 				}
 
-				this.closeEvents.all.push(function(){
+				this.on('close',function(){
 					Parent.show();
 				});
 			}
 
 			// Toggle "pure-is-open" class on body tag when modal is open
 			document.body.classList.add('pure-is-open');
-			this.closeEvents.all.push(function(){
+			this.on('close', function(){
 				var open = false;
 
 				for(var x in Modal.openModals) {
@@ -570,7 +563,7 @@ var Modal = (function(){
 						allModals = thisModal.openModals;
 
 					// Trigger close on current modal
-					thisModal.triggerClose('overlay');
+					thisModal.Close('overlay');
 
 					switch (closeAction) {
 						case "self":
@@ -581,7 +574,7 @@ var Modal = (function(){
 							for (var guid in allModals) {
 								if (!allModals.hasOwnProperty(guid)) return;
 
-								allModals[guid].triggerClose('parent overlay');
+								allModals[guid].Close('parent overlay');
 							}
 							break;
 						case "flow":
@@ -589,7 +582,7 @@ var Modal = (function(){
 						default:
 							// Close all modals displayed in current flow
 							for (var i=(thisFlow.length-1);i>-1;i++) {
-								thisFlow[i].triggerClose('parent overlay');
+								thisFlow[i].Close('parent overlay');
 							}
 							break;
 					}
@@ -815,19 +808,19 @@ var Modal = (function(){
 					switch (closeWhat) {
 						case "flow":
 							var flow = thisModal.flow();
-							flow.goTo(0,closeType).triggerClose(closeType);
+							flow.goTo(0,closeType).Close(closeType);
 							break;
 						case "all":
 							var allModals = thisModal.openModals;
 							for (var guid in allModals) {
 								if (!allModals.hasOwnProperty(guid)) return;
 
-								allModals[guid].triggerClose(closeType);
+								allModals[guid].Close(closeType);
 							}
 							break;
 						case "this":
 						default:
-							thisModal.triggerClose(closeType);
+							thisModal.Close(closeType);
 					}
 				});
 			}
@@ -1130,20 +1123,21 @@ var Modal = (function(){
 	/**
 	 * Destroyers
 	 */
-		Close: function() {
-			this.triggerClose("method");
-		},
-
-		triggerClose: function(event) {
-			if (!event) {
-				event = "method";
+		Close: function(source) {
+			if (!source) {
+				source = "method";
 			}
 
+			var reg = /\s+/ig;
+			if (reg.test(source)) {
+				source = source.trim().split(reg).join(' close.');
+			}
+
+			this.trigger('close close.'+source);
 
 			if(this.__isDOM(this.modal) && this.modal.parentNode) {
 				this.modal.parentNode.removeChild(this.modal);
 			}
-
 
 			var self = this.flow().indexOf(this);
 			if (self>-1) {
@@ -1152,26 +1146,8 @@ var Modal = (function(){
 
 			this.flow(null);
 
-
 			delete this.openModals[this.guid];
 			this.displayed = false;
-
-
-			var events = this.closeEvents['all'].concat(this.closeEvents[event] || []);
-			if (events.length>0) {
-				for (var i=0;i<events.length;i++) {
-					var func = events[i],
-						firstIndex = events.indexOf(func);
-
-					// Do Not Execute More Than Once!
-					//if (firstIndex!=i) continue;
-
-					if (func instanceof Function) {
-						func.apply(this);
-					}
-				}
-			}
-
 
 			if(this.__isDOM(this.overlay) && this.overlay.parentNode) {
 				this.overlay.parentNode.removeChild(this.overlay);
@@ -1181,6 +1157,8 @@ var Modal = (function(){
 			if (this.global.overlayModal == this) {
 				this.global.overlayModal = null;
 			}
+
+			this.trigger('close.post');
 		},
 
 
