@@ -26,9 +26,9 @@ wait $!
 git checkout -b $RELEASE_BRANCH
 $BIN_DIR/compile.sh
 wait $!
-git rm -f "$GIT_DIR/extend.js"
-git rm -r -f $BIN_DIR
-git add "$GIT_DIR/extend.min.js"
+git rm -f "$GIT_DIR/modalflow.js" "$GIT_DIR/modal.js" "$GIT_DIR/.gitmodules"
+git rm -r -f $BIN_DIR "$GIT_DIR/contrib"
+git add "$GIT_DIR/pure-modals.min.js"
 git commit -m "AUTO: Compiled and prepared repository for $NVERSION release"
 git checkout master
 git merge -m "AUTO: Merging $RELEASE_BRANCH branch for version $NVERSION" $RELEASE_BRANCH -X theirs

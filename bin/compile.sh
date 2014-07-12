@@ -9,5 +9,5 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 CWD="$( cd -P "$( dirname "$SOURCE" )" && git rev-parse --show-toplevel )"
 
-java -jar $CWD/bin/compiler.jar --compilation_level WHITESPACE_ONLY --js $CWD/extend.js --js_output_file $CWD/extend.min.js #--create_source_map=$CWD/javascript-assets/library/minified/pure-modals.min.map
+java -jar $CWD/bin/compiler.jar --compilation_level WHITESPACE_ONLY --js $CWD/contrib/extend/extend.js $CWD/contrib/extnodelist/extnodelist.js $CWD/modalflow.js $CWD/modal.js --js_output_file $CWD/pure-modals.min.js #--create_source_map=$CWD/javascript-assets/library/minified/pure-modals.min.map
 wait $!

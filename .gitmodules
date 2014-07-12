@@ -1,0 +1,8 @@
+[submodule "contrib/extend"]
+	path = contrib/extend
+	url = git@github.com:Swivelgames/Extend
+	branch = develop
+[submodule "contrib/extnodelist"]
+	path = contrib/extnodelist
+	url = git@github.com:Swivelgames/ExtNodeList
+	branch = develop
