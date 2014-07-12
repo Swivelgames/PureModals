@@ -36,3 +36,5 @@ git branch -D $RELEASE_BRANCH
 git tag -a $NVERSION
 wait $!
 git checkout develop
+git submodule init
+git submodule update
