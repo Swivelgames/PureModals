@@ -136,7 +136,7 @@ var ModalFlow = (function(){
 							// Iterate over modals
 							for (var i=0;i<this.length;i++) {
 								// Return index of modal whose name matches selector
-								if (this[i].tplName==sel) return i;
+								if (this[i].modalName==sel) return i;
 							}
 						} else {
 							// Parse Integer
