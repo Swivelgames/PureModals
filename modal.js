@@ -14,6 +14,8 @@ var Modal = (function(){
 	 * @param	{String}	Parent			Parent modal
 	 */
 	var Constructor = function(TemplateName, Data, Options, Parent) {
+		this.__originalArguments = Array.prototype.slice.call(arguments,0);
+
 		// Carry Data
 		this.data = Data;
 
@@ -1833,6 +1835,21 @@ var Modal = (function(){
 
 		__getScrollTop: function(){
 			return (typeof pageYOffset != 'undefined') ? pageYOffset : (this.__getScrollableElement().scrollTop);
+		},
+
+		__cycle: function(){
+			var Constructor = this.thisConstructor,
+				proto = Constructor.prototype,
+				args = Array.prototype.slice.call(this.__originalArguments,0),
+				that = this;
+
+			this.Close();
+
+			for(var x in proto) {
+				that[x] = proto[x];
+			}
+
+			Constructor.apply(that,args);
 		},
 
 		addClass: function(elem, className) {
