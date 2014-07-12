@@ -1133,7 +1133,7 @@ var Modal = (function(){
 				source = source.trim().split(reg).join(' close.');
 			}
 
-			if(this.triggerHandler('close close.'+source, true, )===false) return false;
+			if(this.triggerHandler('close close.'+source, true, source.split(reg))===false) return false;
 
 			if(this.__isDOM(this.modal) && this.modal.parentNode) {
 				this.modal.parentNode.removeChild(this.modal);
