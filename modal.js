@@ -1365,69 +1365,70 @@ var Modal = (function(){
 			var target = settings[0],
 				anchor = settings[1];
 
-			if (this.__isDOM(target)) {
-				if (!anchor) {
-					anchor = "top center"; // default
-				} else {
-					anchor = anchor.trim();
-				}
+			if (!this.__isDOM(target)) return;
 
-				var anchorArr = anchor.split(/\s+/),
-					tags = {
-						vert: anchorArr[0],
-						horz: anchorArr[1]
-					},
+			if (!anchor) {
+				anchor = "top center"; // default
+			} else {
+				anchor = anchor.trim();
+			}
 
-
-				/**
-				 * !!IMPORTANT!!
-				 * The AnchorScope object is added to the scope chain within the delegated methods below.
-				 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/with}
-				 **/
-					Scope = {};
-					Scope.modal = this.modal;
-					Scope.target = target;
-
-					Scope.bufferSettings = this.getSetting('posBuffer');
-					Scope.buffer = Scope.bufferSettings.override || Scope.bufferSettings.anchor || 0;
-
-					Scope.offset = this.__getElementOffset(Scope.modal);
-					Scope.height = Scope.modal.offsetHeight;
-					Scope.width = Scope.modal.offsetWidth;
-
-					Scope.anchorDim = Extend.mergeObjects(
-						{}, this.__getElementOffset(Scope.target), {
-							width: Scope.target.offsetWidth,
-							height: Scope.target.offsetHeight
-						}
-					);
-
-					Scope.far = {
-						top: (Scope.anchorDim.top + Scope.anchorDim.height) - Scope.offset.top,
-						bottom: Scope.anchorDim.top - (Scope.offset.top + Scope.height),
-						left: (Scope.anchorDim.left+ Scope.anchorDim.width) - Scope.offset.left,
-						right: Scope.anchorDim.left - (Scope.offset.left + Scope.width),
-						vertCenter: (Scope.anchorDim.top + (Scope.anchorDim.height/2)) - (Scope.offset.top + (Scope.height/2)),
-						horzCenter: (Scope.anchorDim.left + (Scope.anchorDim.width/2)) - (Scope.offset.left + (Scope.width/2))
-					};
-				/** END Scope Chain Declaration **/
+			var anchorArr = anchor.split(/\s+/),
+				tags = {
+					vert: anchorArr[0],
+					horz: anchorArr[1]
+				},
 
 
-				if (!!~tags.vert.indexOf('bot')) {
-					this.__anchorBottom(Scope);
-				} else if (!!~tags.vert.indexOf('cen')) {
-					this.__anchorVerticleCenter(Scope);
-				} else/* if (!!~tags.vert.indexOf('top')) */{ //default
-					this.__anchorTop(Scope);
-				}
+			/**
+			 * !!IMPORTANT!!
+			 * The AnchorScope object is added to the scope chain within the delegated methods below.
+			 * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/with}
+			 **/
+				Scope = {};
+				Scope.modal = this.modal;
+				Scope.target = target;
 
-				if (!!~tags.horz.indexOf('left')) {
-					this.__anchorLeft(Scope);
-				} else if (!!~tags.horz.indexOf('right')) {
-					this.__anchorRight(Scope);
-				} else/* if (!!~tags.horz.indexOf('cen')) */{ //default
-					this.__anchorHorizontalCenter(Scope);
-				}
+				Scope.bufferSettings = this.getSetting('posBuffer');
+				Scope.buffer = Scope.bufferSettings.override || Scope.bufferSettings.anchor || 0;
+
+				Scope.offset = this.__getElementOffset(this.modal);
+				Scope.height = Scope.modal.offsetHeight;
+				Scope.width = Scope.modal.offsetWidth;
+
+				Scope.anchorDim = Extend.mergeObjects(
+					{}, this.__getElementOffset(Scope.target), {
+						width: Scope.target.offsetWidth,
+						height: Scope.target.offsetHeight
+					}
+				);
+
+				Scope.far = {
+					top: (Scope.anchorDim.top + Scope.anchorDim.height + Scope.buffer) - Scope.offset.top,
+					bottom: Scope.anchorDim.top - (Scope.offset.top + Scope.height + Scope.buffer),
+					left: Scope.anchorDim.left + Scope.anchorDim.width - Scope.offset.left + Scope.buffer,
+					right: Scope.anchorDim.left - (Scope.offset.left + Scope.width + Scope.buffer),
+					vertCenter: (Scope.anchorDim.top + (Scope.anchorDim.height/2)) - (Scope.offset.top + (Scope.height/2)),
+					horzCenter: (Scope.anchorDim.left + (Scope.anchorDim.width/2)) - (Scope.offset.left + (Scope.width/2))
+				};
+			/** END Scope Chain Declaration **/
+
+
+			if (!!~tags.vert.indexOf('bot')) {
+				this.__anchorBottom(Scope);
+			} else if (!!~tags.vert.indexOf('cen')) {
+				this.__anchorVerticleCenter(Scope);
+			} else/* if (!!~tags.vert.indexOf('top')) */{ //default
+				this.__anchorTop(Scope);
+			}
+
+			Scope.offset = this.__getElementOffset(this.modal);
+			if (!!~tags.horz.indexOf('left')) {
+				this.__anchorLeft(Scope);
+			} else if (!!~tags.horz.indexOf('right')) {
+				this.__anchorRight(Scope);
+			} else/* if (!!~tags.horz.indexOf('cen')) */{ //default
+				this.__anchorHorizontalCenter(Scope);
 			}
 		},
 
@@ -1435,15 +1436,27 @@ var Modal = (function(){
 			modal.style.top = offset.top + far.top + "px";
 			modal.style.left = offset.left + "px";
 		}},
+		__anchorBottom: function(Scope) { with(Scope) {
+			modal.style.top = offset.top + far.bottom + "px";
+			modal.style.left = offset.left + "px";
+		}},
+		__anchorVerticleCenter: function(Scope) { with(Scope) {
+			modal.style.top = offset.top + far.vertCenter + "px";
+			modal.style.left = offset.left + "px";
+		}},
+
 		__anchorHorizontalCenter: function(Scope) { with(Scope) {
-			var offset = this.__getElementOffset(modal);
 			modal.style.top = offset.top + "px";
 			modal.style.left = offset.left + far.horzCenter + "px";
 		}},
-		__anchorBottom: function(Scope) { return; },
-		__anchorLeft: function(Scope) { return; },
-		__anchorRight: function(Scope) { return; },
-		__anchorVerticleCenter: function(Scope) { return; },
+		__anchorLeft: function(Scope) { with(Scope) {
+			modal.style.top = offset.top + "px";
+			modal.style.left = offset.left + far.left + "px";
+		}},
+		__anchorRight: function(Scope) { with(Scope) {
+			modal.style.top = offset.top + "px";
+			modal.style.left = offset.left + far.right + "px";
+		}},
 
 
 
