@@ -35,10 +35,10 @@ git rm -f "$GIT_DIR/modalflow.js" "$GIT_DIR/modal.js" "$GIT_DIR/.gitmodules"
 git rm -r -f $BIN_DIR "$GIT_DIR/contrib"
 git add "$GIT_DIR/pure-modals.min.js"
 git commit -m "AUTO: Compiled and prepared repository for $NVERSION release"
-if [ CANDIDATE -eq "false" ]
-	git checkout master
-	git merge -m "AUTO: Merging $RELEASE_BRANCH branch for version $NVERSION" $RELEASE_BRANCH -X theirs
-	git branch -D $RELEASE_BRANCH
+if [ "$CANDIDATE" == "false" ]; then
+	git checkout master;
+	git merge -m "AUTO: Merging $RELEASE_BRANCH branch for version $NVERSION" $RELEASE_BRANCH -X theirs;
+	git branch -D $RELEASE_BRANCH;
 fi
 git tag -a $NVERSION
 wait $!
