@@ -472,7 +472,6 @@ var Modal = (function(){
 				this.RefreshPosition(true);
 			}
 
-
 			var Parent = this.parent;
 			if (Parent) {
 				// Hide parent and attach show event
@@ -484,6 +483,23 @@ var Modal = (function(){
 					Parent.show();
 				});
 			}
+
+			// Toggle "pure-is-open" class on body tag when modal is open
+			document.body.classList.add('pure-is-open');
+			this.closeEvents.all.push(function(){
+				var open = false;
+
+				for(var x in Modal.openModals) {
+					if(!Modal.openModals.hasOwnProperty(x)) continue;
+
+					open = true;
+					break;
+				}
+
+				if(!open) {
+					document.body.classList.remove('pure-is-open');
+				}
+			})
 
 			// Display overlay
 			this.__initOverlay();
