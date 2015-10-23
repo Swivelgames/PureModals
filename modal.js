@@ -665,67 +665,73 @@ var Modal = (function(){
 			for (var i=0;i<modalLinks.length;i++) {
 				var link = modalLinks[i];
 
+				var openerExecuting = false;
 				// Attach open even to links
 				link.addEventListener('click',function(e){
 					e.preventDefault();
 
-					var guid = this.openModal;
-					// Has this link already been clicked?
-					if (guid && Modal.prototype.openModals.hasOwnProperty(guid)) {
-						var thisModal = Modal.prototype.openModals[guid];
+					if(openerExecuting===true) return;
+					openerExecuting = true;
 
-						// If so, check to see if it is visible
-						if (thisModal.isHidden()) {
-							thisModal.show();
-						}
+					try {
+						var guid = this.openModal;
+						// Has this link already been clicked?
+						if (guid && Modal.prototype.openModals.hasOwnProperty(guid)) {
+							var thisModal = Modal.prototype.openModals[guid];
 
-						return;
-					}
+							// If so, check to see if it is visible
+							if (thisModal.isHidden()) {
+								thisModal.show();
+							}
 
-					var options = {};
-
-					// Get name of class to utilize
-					var className = this.getAttribute('data-modal-class');
-					if (!className) {
-						className = "Modal";
-					}
-
-					var modalClass = that.getContructorFromString(className);
-						data = that.getDataFromDom(this);
-
-					// Pass event and target element
-					data.targetEvent = e;
-					data.target = this;
-
-					// Retrieve name of modal to open
-					var modalTpl = this.getAttribute('data-modal');
-					if (!modalTpl || modalTpl=="" || modalTpl.indexOf("%")>-1) {
-						var attr = modalTpl.replace(/\%/ig,''),
-							attrVal = this.getAttribute(attr);
-
-						modalTpl = null;
-
-						if (attrVal) {
-							options.tplUrlOverride=attrVal;
-						} else if (!modalClass.prototype.modalName) {
-							console.error("Invalid Modal Name: "+modalTpl);
 							return;
 						}
-					}
 
-					// Try to open modal with specified classname
-					try {
+						var options = {};
+
+						// Get name of class to utilize
+						var className = this.getAttribute('data-modal-class');
+						if (!className) {
+							className = "Modal";
+						}
+
+						var modalClass = that.getContructorFromString(className);
+							data = that.getDataFromDom(this);
+
+						// Pass event and target element
+						data.targetEvent = e;
+						data.target = this;
+
+						// Retrieve name of modal to open
+						var modalTpl = this.getAttribute('data-modal');
+						if (!modalTpl || modalTpl=="" || modalTpl.indexOf("%")>-1) {
+							var attr = modalTpl.replace(/\%/ig,''),
+								attrVal = this.getAttribute(attr);
+
+							modalTpl = null;
+
+							if (attrVal) {
+								options.tplUrlOverride=attrVal;
+							} else if (!modalClass.prototype.modalName) {
+								console.error("Invalid Modal Name: "+modalTpl);
+								return;
+							}
+						}
+
+						// Try to open modal with specified classname
 						var newModal = new modalClass(modalTpl, data, options, parentModal);
+
+						// Display was succesful; track this modal's guid.
+						this.openModal = newModal.guid;
 					} catch(e) {
 						// Display error
 						console.error("Error initializing modal: " + className);
 						console.error(e.stack);
 						console.log(this);
 						return;
+					} finally {
+						openerExecuting = false;
 					}
-
-					// Display was succesful; track this modal's guid.
-					this.openModal = newModal.guid;
 				}, true);
 			}
 		},
